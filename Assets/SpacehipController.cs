@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class SpacehipController : MonoBehaviour
 {
+
     private PlayerInput playerInput;
     private Rigidbody rigidBody;
 
@@ -28,6 +30,8 @@ public class SpacehipController : MonoBehaviour
 
     private void Awake()
     {
+        DOTween.Init(false, true, LogBehaviour.ErrorsOnly);
+
         rigidBody = GetComponent<Rigidbody>();
         playerInput = GetComponent<PlayerInput>();
         playerInput.onActionTriggered += PlayerInput_onActionTriggered;
@@ -35,7 +39,6 @@ public class SpacehipController : MonoBehaviour
 
     private void Update()
     {
-        // Need to clamp mouse value to screen space because otherwise it doesn't work. and mouse has greater value than it should.
 
         mouseDistanceFromCenter.x = (mousePositionClamped.x - screenCenter.x) / screenCenter.y;
         mouseDistanceFromCenter.y = (mousePositionClamped.y - screenCenter.y) / screenCenter.y; // cause for some reason its inverted.
@@ -45,21 +48,14 @@ public class SpacehipController : MonoBehaviour
         turn_accelerationX = mouseDistanceFromCenter.x * turnSpeed * Time.deltaTime;
         turn_accelerationY = -1 * mouseDistanceFromCenter.y * turnSpeed * Time.deltaTime;
 
-        transform.Rotate(turn_accelerationY, turn_accelerationX, rollZ * Time.deltaTime * smooth, Space.Self); // <---- Doesn't work , for some reason it changes Z Axis,  For now ill use this and use rollZ to compensate for the annoying roll
+        turnVector = new Vector3(turn_accelerationY, turn_accelerationX, rollZ);
 
-        // Can add rigid body relaive torque based system when where I use the mouse directions (1,1) (-1,-1) to add torque  in the horizontal and vertical axis separately and it would work fine I think.
-
-        //transform.localRotation = Quaternion.Euler(mousePositionClamped.y, mousePositionClamped.x, 0);// <--- This works correctly but had to change to pivot mod in editor to get gizmo to show correctly.
-
-        //transform.localRotation = Quaternion.Euler(mouseDistanceFromCenter.y * turnSpeed, mouseDistanceFromCenter.x * turnSpeed, 0); // <--- for this methods I need to work with accumulating mouse delta instead.
-        /*      turnHorizontal = transform.up * mouseDistanceFromCenterX;
-                turnVertical = transform.right * mouseDistanceFromCenterY;
-         */
-
+        transform.DORotate(turnVector, Time.deltaTime, RotateMode.LocalAxisAdd); // <--- works great but I still want to implement simple rigid body controls.
+        /* rigidBody.MoveRotation(turnHorizontal);
+        rigidBody.MoveRotation(); */
 
         transform.Translate(strafeMove.x, strafeMove.y, throttle);
         // don't ask why but for some reason its Y , X ,Z and not X,Y Z
-
 
     }
 
