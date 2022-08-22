@@ -1,5 +1,7 @@
 # This .gitignore file should be placed at the root of your Unity project directory
 /*
+!/Assets
+/Assets/*
 !/Assets/Scripts/
 /Assets/Scripts/*
-!Assets/Scripts/*.cs
+!/Assets/Scripts/*.cs
