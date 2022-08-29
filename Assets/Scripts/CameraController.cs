@@ -9,7 +9,7 @@ public class CameraController : MonoBehaviour
     private CinemachineFreeLook freeLookCamera;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         freeLookCamera = GetComponent<CinemachineFreeLook>();
 
@@ -18,7 +18,7 @@ public class CameraController : MonoBehaviour
     }   
 
     // Update is called once per frame
-    void Update()
+    private void LateUpdate()
     {
         Vector2 mouseVector = InputManager.Instance.MouseDeltaLook;
         bool CameraRotationToggle = InputManager.Instance.CameraRotateToggle;

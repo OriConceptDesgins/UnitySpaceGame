@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
 using Cinemachine;
+using static ShipStats;
 
 public class SpacehipController : MonoBehaviour
 {
@@ -31,7 +32,8 @@ public class SpacehipController : MonoBehaviour
     private Vector2 strafeDirection;
     private Vector2 mousePosition;
 
-    private const float turnSpeed = 100;
+    SpaceShipStats playerShipStats;
+    InputManager inputManager;
 
     private void Awake()
     {
@@ -41,31 +43,26 @@ public class SpacehipController : MonoBehaviour
 
     private void Update()
     {
-
-        // Get inputs from input manager singleton instance
-        thrust = InputManager.Instance.ThrustMove;
-        rollZAxis = InputManager.Instance.RollMove;
-        realign = InputManager.Instance.Realign;
-        strafeDirection = InputManager.Instance.StrafeMove;
-        spaceBreak = InputManager.Instance.SpaceBreak;
-        mousePosition = InputManager.Instance.MousePosition;
+        playerShipStats = ShipStats.Instance.PlayerShipStats;
+        inputManager = InputManager.Instance;
 
         ToggleWeaponGroup(InputManager.Instance.ToggleWeapon1, 1);
 
-        ChangeThrottle(thrust);
+        ChangeThrottle(inputManager.ThrustMove);
 
         Debug.DrawLine(transform.localPosition, transform.forward * 100);    // works perfect. Delete when done
         
         
-        transform.Translate(Vector3.forward * throttle * Time.deltaTime); 
-        
-        if (InputManager.Instance.Select) { SelectTarget();}
-        if (spaceBreak) { SpaceBreak(); }
+        transform.Translate(Vector3.forward * throttle * Time.deltaTime);
+
+        rigidBody.AddForce(strafeDirection);
+        if (inputManager.Select) { SelectTarget();}
+        if (inputManager.SpaceBreak) { SpaceBreak(); }
     }
 
     private void LateUpdate()
     {
-        if (realign) { RotateTowardsPoint(); }
+        if (realign || inputManager.Select) { RotateTowardsPoint(); }
     }
 
 
@@ -123,8 +120,8 @@ public class SpacehipController : MonoBehaviour
     {
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)); //shoots ray from the camera to the center of the viewport.
         Vector3 pointInDistance = (ray.origin + (ray.direction * 1000)); 
-        transform.DOLookAt(pointInDistance, turnSpeed * Time.deltaTime);
-        rigidBody.DOLookAt(pointInDistance, turnSpeed * Time.deltaTime);
+        transform.DOLookAt(pointInDistance, playerShipStats.TurnSpeed * Time.deltaTime);
+        rigidBody.DOLookAt(pointInDistance, playerShipStats.TurnSpeed * Time.deltaTime);
     }
 
 

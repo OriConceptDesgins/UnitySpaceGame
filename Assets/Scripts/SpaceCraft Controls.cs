@@ -254,7 +254,7 @@ public partial class @SpaceCraftControls : IInputActionCollection2, IDisposable
                     ""id"": ""8c8e84f9-8283-4723-bf51-fb9a352e1746"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""StickDeadzone"",
                     ""groups"": """",
                     ""action"": ""Look"",
                     ""isComposite"": false,
